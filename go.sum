@@ -1,5 +1,11 @@
 github.com/crgimenes/filo v0.0.10 h1:pZoGvAaoGHqovOzlASd8K0tfIH1zWd17wU5AeL6Dmjo=
 github.com/crgimenes/filo v0.0.10/go.mod h1:rd5VPgeydIW57FEmOl9PCaW8KN9pqi7EpA0aoZt3sFU=
+github.com/crgimenes/glaze v0.0.29 h1:vdfmqjTahHSPN+pVpSSzMsGQkPGdEl3jtr81MPXWhXE=
+github.com/crgimenes/glaze v0.0.29/go.mod h1:vlN6LA8BiiUrJL9T/Q4dVGKlGnYX/kAnvdUZq8u0DBU=
+github.com/crgimenes/minigui v0.1.0 h1:WDE8TBfX4nAcjo6We/Ej4qXa6JB2w7qUFYjI/v+exEU=
+github.com/crgimenes/minigui v0.1.0/go.mod h1:kxuZKJZy+B7QqqdhBrE5gmBSwAlCWzB8+XLQLdhQWaE=
+github.com/crgimenes/native v0.1.0 h1:5LfLR1HGA9ePimNSUTKsvim5ex7xQJOsT8zXp7cZWSY=
+github.com/crgimenes/native v0.1.0/go.mod h1:r2iwllKCbmywZTk1MJNtcdur317e4r67J4+Tm29aiVU=
 github.com/ebitengine/gomobile v0.0.0-20260211053922-3d992dae95d1 h1:U8WldvN7/4cgo65U2fr2urv43/yhqYOK5FegFPPfI4M=
 github.com/ebitengine/gomobile v0.0.0-20260211053922-3d992dae95d1/go.mod h1:J7sDBRQG9pJGMa9Z+h8l3flwk0yEKDzWeR57vA1LI5U=
 github.com/ebitengine/hideconsole v1.0.0 h1:5J4U0kXF+pv/DhiXt5/lTz0eO5ogJ1iXb8Yj1yReDqE=
