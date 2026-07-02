@@ -103,7 +103,9 @@ Debian/Ubuntu: `libgl1-mesa-dev`, `libasound2-dev`, `libxcursor-dev`, `libxi-dev
 | R | reset the flow |
 | E | open the editor |
 | O | open an `.afoil` scene |
+| Cmd+O | open (native file dialog) |
 | Cmd+S | save |
+| Cmd+Shift+S | save as |
 | L | play / pause the animation |
 | Esc | back to the foil |
 

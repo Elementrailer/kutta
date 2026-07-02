@@ -610,7 +610,7 @@ func (g *Game) runSimToolbar() {
 	if g.gui.Toggle("st.pause", "Pause", g.paused) {
 		g.paused = !g.paused
 	}
-	// NACA code entry (interactive foil only): type any 4-digit code, Enter applies.
+	// NACA code entry (interactive foil only): type a 4- or 5-digit code, Enter applies.
 	if g.scn == nil {
 		g.gui.SameLine()
 		g.gui.Label("NACA")
