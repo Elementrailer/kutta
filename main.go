@@ -13,6 +13,7 @@ func main() {
 	ebiten.SetWindowSize(winW, winH)
 	ebiten.SetWindowTitle("airfoil — 2D wind tunnel")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+	setWindowIcon()
 	if err := ebiten.RunGame(NewGame()); err != nil {
 		log.Fatal(err)
 	}

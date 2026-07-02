@@ -40,8 +40,9 @@ go.work.sum
 dist/
 notes.md
 release.sh
-# Local scratch renders
+
 *.png
+!assets/*.png
 
 TODO.md
 
