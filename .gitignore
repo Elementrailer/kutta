@@ -35,6 +35,11 @@ go.work.sum
 /airfoil
 /snapshot
 
+.DS_Store
+
+dist/
+notes.md
+release.sh
 # Local scratch renders
 *.png
 
