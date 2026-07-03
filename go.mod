@@ -3,8 +3,8 @@ module airfoil
 go 1.26.4
 
 require (
-	github.com/crgimenes/filo v0.0.10
-	github.com/crgimenes/glaze v0.0.30
+	github.com/crgimenes/filo v0.0.15
+	github.com/crgimenes/glaze v0.0.31
 	github.com/crgimenes/minigui v0.1.4
 	github.com/hajimehoshi/ebiten/v2 v2.10.0-alpha.11
 	golang.org/x/image v0.43.0
