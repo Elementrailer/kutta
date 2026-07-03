@@ -112,17 +112,20 @@ func writeSpeedPNG(path string, s *lbm.Solver) {
 	if err != nil {
 		panic(err)
 	}
-	if err := png.Encode(f, img); err != nil {
+	err = png.Encode(f, img)
+	if err != nil {
 		panic(err)
 	}
-	if err := f.Close(); err != nil {
+	err = f.Close()
+	if err != nil {
 		panic(err)
 	}
 }
 
 // abs returns the absolute form of p for printing, falling back to p.
 func abs(p string) string {
-	if a, err := filepath.Abs(p); err == nil {
+	a, err := filepath.Abs(p)
+	if err == nil {
 		return a
 	}
 	return p

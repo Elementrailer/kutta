@@ -203,7 +203,8 @@ func TestVorticitySolidBodyRotation(t *testing.T) {
 			s.Uy[c] = float64(x)
 		}
 	}
-	if got := s.Vorticity(2, 2); math.Abs(got-2) > 1e-9 {
+	got := s.Vorticity(2, 2)
+	if math.Abs(got-2) > 1e-9 {
 		t.Errorf("vorticity = %g, want 2", got)
 	}
 }

@@ -30,7 +30,8 @@ func ParseDAT(data []byte) ([]Point, error) {
 			lines = append(lines, line)
 		}
 	}
-	if err := sc.Err(); err != nil {
+	err := sc.Err()
+	if err != nil {
 		return nil, fmt.Errorf("foil: reading .dat: %w", err)
 	}
 	if len(lines) < 4 {

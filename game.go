@@ -330,7 +330,8 @@ func (g *Game) setNACA(code string) {
 		g.nacaInput = g.nacaCode // we left foil mode; restore the field text
 		return
 	}
-	if _, err := foil.NACA(code, 80); err != nil {
+	_, err := foil.NACA(code, 80)
+	if err != nil {
 		g.nacaInput = g.nacaCode
 		return
 	}
@@ -504,7 +505,8 @@ func (g *Game) menuSignature() string {
 
 // syncMenu rebuilds the native menu on the main thread when the context changed.
 func (g *Game) syncMenu() {
-	if sig := g.menuSignature(); sig != g.menuSig {
+	sig := g.menuSignature()
+	if sig != g.menuSig {
 		items := g.menuItems()
 		ebiten.RunOnMainThread(func() {
 			_, _ = menu.Set(items, menu.Options{}) // unsupported platforms no-op
@@ -783,7 +785,8 @@ func (g *Game) saveScene() {
 		g.sceneErr = err.Error()
 		return
 	}
-	if err := os.WriteFile(g.savePath, []byte(text), 0o600); err != nil { // #nosec G304 -- previously user-chosen path
+	err = os.WriteFile(g.savePath, []byte(text), 0o600) // #nosec G304 -- previously user-chosen path
+	if err != nil {
 		g.sceneErr = err.Error()
 		return
 	}
@@ -814,7 +817,8 @@ func (g *Game) saveSceneAs() {
 	if !strings.HasSuffix(path, sceneio.Ext) {
 		path += sceneio.Ext
 	}
-	if err := os.WriteFile(path, []byte(text), 0o600); err != nil { // #nosec G304 -- user-chosen save path
+	err = os.WriteFile(path, []byte(text), 0o600) // #nosec G304 -- user-chosen save path
+	if err != nil {
 		g.sceneErr = err.Error()
 		return
 	}
@@ -1132,7 +1136,8 @@ func (g *Game) drawMarkers(dst *ebiten.Image) {
 	cgx, cgy := gridToScreen(px, py)
 	drawCGSymbol(dst, cgx, cgy, 7)
 
-	if cx, cy, _, ok := g.centerOfPressure(); ok {
+	cx, cy, _, ok := g.centerOfPressure()
+	if ok {
 		sx, sy := gridToScreen(cx, cy)
 		vector.FillCircle(dst, sx, sy, 4, colRes, true)
 	}
@@ -1249,7 +1254,8 @@ func (g *Game) drawSidePanel(screen *ebiten.Image) {
 	y = g.rowc(screen, "Flow", stallStr, x, y, stallCol)
 	if g.scn == nil {
 		copStr := "n/a (near zero lift)"
-		if _, _, frac, ok := g.centerOfPressure(); ok {
+		_, _, frac, ok := g.centerOfPressure()
+		if ok {
 			copStr = fmt.Sprintf("%.0f%% chord", frac*100)
 		}
 		y = g.row(screen, "Center of press.", copStr, x, y)

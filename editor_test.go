@@ -181,7 +181,8 @@ func TestKeyframeRetimeDrag(t *testing.T) {
 	o.SetKey(1, scene.Pose{Rot: -30, Scale: 1})
 	tx, _, tw, _ := g.timelineRect()
 	// Grab the tick at t=1 and drag it to t=3.
-	if k := g.keyAtStrip(tx + (1.0/4.0)*tw); k != 0 {
+	k := g.keyAtStrip(tx + (1.0/4.0)*tw)
+	if k != 0 {
 		t.Fatalf("keyAtStrip on the tick = %d, want 0", k)
 	}
 	g.beginKeyDrag(0)
@@ -243,11 +244,13 @@ func TestCentroid(t *testing.T) {
 
 func TestNextObjectName(t *testing.T) {
 	g := editGame() // one object named "sq"
-	if n := g.nextObjectName(); n != "object1" {
+	n := g.nextObjectName()
+	if n != "object1" {
 		t.Errorf("name = %q, want object1", n)
 	}
 	g.scn.Objects[0].Name = "object1"
-	if n := g.nextObjectName(); n != "object2" {
+	n = g.nextObjectName()
+	if n != "object2" {
 		t.Errorf("name = %q, want object2 when object1 is taken", n)
 	}
 }
@@ -292,16 +295,19 @@ func TestSnapPoint(t *testing.T) {
 	g := editGame() // square corners (2,2)(6,2)(6,6)(2,6), zoom 10
 	g.snapOn = true
 	// Far from any vertex -> snaps to the integer grid.
-	if x, y := g.snapPoint(3.4, 5.6, -1, -1); !capprox(x, 3) || !capprox(y, 6) {
+	x, y := g.snapPoint(3.4, 5.6, -1, -1)
+	if !capprox(x, 3) || !capprox(y, 6) {
 		t.Errorf("grid snap = (%g,%g), want (3,6)", x, y)
 	}
 	// Near an existing vertex -> snaps onto it exactly.
-	if x, y := g.snapPoint(6.2, 6.1, -1, -1); !capprox(x, 6) || !capprox(y, 6) {
+	x, y = g.snapPoint(6.2, 6.1, -1, -1)
+	if !capprox(x, 6) || !capprox(y, 6) {
 		t.Errorf("vertex snap = (%g,%g), want (6,6)", x, y)
 	}
 	// Snap off -> exact position.
 	g.snapOn = false
-	if x, y := g.snapPoint(3.4, 5.6, -1, -1); !capprox(x, 3.4) || !capprox(y, 5.6) {
+	x, y = g.snapPoint(3.4, 5.6, -1, -1)
+	if !capprox(x, 3.4) || !capprox(y, 5.6) {
 		t.Errorf("snap off = (%g,%g), want (3.4,5.6)", x, y)
 	}
 }
@@ -352,16 +358,20 @@ func TestObjectCut(t *testing.T) {
 func TestHoverLabel(t *testing.T) {
 	g := editGame() // square, zoom 10; geometry mode, object 0 selected
 	_, rotS, _ := g.gizmoHandles(g.scn.Objects[0])
-	if got := g.hoverLabel(rotS[0], rotS[1]); got != "drag: rotate" {
+	got := g.hoverLabel(rotS[0], rotS[1])
+	if got != "drag: rotate" {
 		t.Errorf("over rotate knob = %q, want \"drag: rotate\"", got)
 	}
-	if got := g.hoverLabel(20, -20); got == "" || got == "drag: move object" {
+	got = g.hoverLabel(20, -20)
+	if got == "" || got == "drag: move object" {
 		t.Errorf("over vertex 0 = %q, want a vertex hint", got)
 	}
-	if got := g.hoverLabel(30, -30); got != "drag: move object" {
+	got = g.hoverLabel(30, -30)
+	if got != "drag: move object" {
 		t.Errorf("inside body = %q, want \"drag: move object\"", got)
 	}
-	if got := g.hoverLabel(500, 500); got != "" {
+	got = g.hoverLabel(500, 500)
+	if got != "" {
 		t.Errorf("over empty space = %q, want empty", got)
 	}
 }
@@ -370,10 +380,12 @@ func TestNearVertex(t *testing.T) {
 	g := editGame() // square, zoom 10, origin at world (0,0)
 	o := g.scn.Objects[0]
 	// Vertex (2,2) -> screen (20,-20).
-	if i := g.nearVertex(20, -20, o); i != 0 {
+	i := g.nearVertex(20, -20, o)
+	if i != 0 {
 		t.Errorf("nearVertex at corner 0 = %d, want 0", i)
 	}
-	if i := g.nearVertex(200, 200, o); i != -1 {
+	i = g.nearVertex(200, 200, o)
+	if i != -1 {
 		t.Errorf("nearVertex far away = %d, want -1", i)
 	}
 }
@@ -470,7 +482,8 @@ func TestConnectMergesDifferentArcs(t *testing.T) {
 	if len(o.Shape) != 6 {
 		t.Errorf("merged shape = %d, want 6", len(o.Shape))
 	}
-	if arcs := objectArcIdx(o); len(arcs) != 1 {
+	arcs := objectArcIdx(o)
+	if len(arcs) != 1 {
 		t.Errorf("arcs after merge = %d, want 1", len(arcs))
 	}
 }
@@ -507,7 +520,8 @@ func TestNearEdge(t *testing.T) {
 	if !capprox(p.X, 4) || !capprox(p.Y, 2) {
 		t.Errorf("edge point = (%g,%g), want (4,2)", p.X, p.Y)
 	}
-	if _, _, ok := g.nearEdge(200, 200, o); ok {
+	_, _, ok = g.nearEdge(200, 200, o)
+	if ok {
 		t.Error("nearEdge far away returned ok")
 	}
 }

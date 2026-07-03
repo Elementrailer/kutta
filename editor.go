@@ -226,7 +226,8 @@ func (g *Game) editorInput() {
 		return
 	}
 
-	if _, dy := ebiten.Wheel(); dy != 0 && inCanvas {
+	_, dy := ebiten.Wheel()
+	if dy != 0 && inCanvas {
 		g.cam.zoomAt(fmx, fmy, 1+dy*0.1)
 	}
 
@@ -323,7 +324,8 @@ func (g *Game) handleScrub(mx, my float64) bool {
 	tx, ty, tw, th := g.timelineRect()
 	inStrip := mx >= tx && mx <= tx+tw && my >= ty-8 && my <= ty+th+8
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) && inStrip {
-		if k := g.keyAtStrip(mx); k >= 0 {
+		k := g.keyAtStrip(mx)
+		if k >= 0 {
 			g.beginKeyDrag(k) // grabbing a keyframe tick retimes it
 		} else {
 			g.scrubbing = true
@@ -700,7 +702,8 @@ func (g *Game) beginDrag(sx, sy float64) {
 	o := g.scn.Objects[g.selObj]
 	// Reconnecting a broken outline: click one loose end, then the other.
 	if g.editMode == emGeometry && o.Broken() {
-		if e := g.nearLooseEnd(sx, sy, o); e >= 0 {
+		e := g.nearLooseEnd(sx, sy, o)
+		if e >= 0 {
 			g.connectEnd(e)
 			g.dragMoved = true // consume: no select-on-release
 			return
@@ -718,7 +721,8 @@ func (g *Game) beginDrag(sx, sy float64) {
 	// can't be used: a thin body's interior is all near an edge).
 	shift := ebiten.IsKeyPressed(ebiten.KeyShiftLeft) || ebiten.IsKeyPressed(ebiten.KeyShiftRight)
 	if g.editMode == emGeometry && vtx < 0 && shift {
-		if idx := g.insertVertexAt(sx, sy); idx >= 0 {
+		idx := g.insertVertexAt(sx, sy)
+		if idx >= 0 {
 			g.dragK = dragVertex
 			g.dragVtx = idx
 			g.dragOrig = append(g.dragOrig[:0], o.Shape...)
@@ -787,7 +791,8 @@ func (g *Game) snapPoint(wx, wy float64, exObj, exVtx int) (float64, float64) {
 				continue
 			}
 			px, py := g.cam.worldToScreen(p.X, p.Y)
-			if d := math.Hypot(sx-px, sy-py); d < best {
+			d := math.Hypot(sx-px, sy-py)
+			if d < best {
 				best, bx, by, found = d, p.X, p.Y, true
 			}
 		}
@@ -947,7 +952,8 @@ func (g *Game) nearVertex(sx, sy float64, o *scene.Object) int {
 	best, bestD := -1, handleHit
 	for i, p := range o.Shape {
 		px, py := g.cam.worldToScreen(p.X, p.Y)
-		if d := math.Hypot(sx-px, sy-py); d <= bestD {
+		d := math.Hypot(sx-px, sy-py)
+		if d <= bestD {
 			best, bestD = i, d
 		}
 	}
@@ -1144,7 +1150,8 @@ func (g *Game) drawInput() {
 	fmx, fmy := float64(mx), float64(my)
 	inCanvas := mx >= 0 && mx < simW && my >= 0 && my < simH
 
-	if _, dy := ebiten.Wheel(); dy != 0 && inCanvas {
+	_, dy := ebiten.Wheel()
+	if dy != 0 && inCanvas {
 		g.cam.zoomAt(fmx, fmy, 1+dy*0.1)
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
@@ -1570,7 +1577,8 @@ func (g *Game) hoverLabel(sx, sy float64) string {
 		if o.Broken() && g.nearLooseEnd(sx, sy, o) >= 0 {
 			return "click two red ends: join"
 		}
-		if _, _, ok := g.nearHandle(sx, sy, o); ok {
+		_, _, ok := g.nearHandle(sx, sy, o)
+		if ok {
 			return "drag: bend curve"
 		}
 		if g.nearVertex(sx, sy, o) >= 0 {

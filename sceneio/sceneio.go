@@ -70,12 +70,14 @@ func Load(src string) (*scene.Scene, error) {
 		},
 	}
 	for name, fn := range builtins {
-		if err := f.RegisterBuiltin(name, fn); err != nil {
+		err := f.RegisterBuiltin(name, fn)
+		if err != nil {
 			return nil, fmt.Errorf("sceneio: register %q: %w", name, err)
 		}
 	}
 
-	if err := f.DoString(src); err != nil {
+	err := f.DoString(src)
+	if err != nil {
 		return nil, fmt.Errorf("sceneio: %w", err)
 	}
 	if decodeErr != nil {

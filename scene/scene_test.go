@@ -22,16 +22,20 @@ func TestPoseAtClampsAndInterpolates(t *testing.T) {
 		{T: 2, Pose: Pose{Rot: 20, Scale: 1}},
 		{T: 4, Pose: Pose{Rot: 0, Scale: 1}},
 	}}
-	if got := o.PoseAt(-1); got.Rot != 0 {
+	got := o.PoseAt(-1)
+	if got.Rot != 0 {
 		t.Errorf("before first key should clamp: %+v", got)
 	}
-	if got := o.PoseAt(9); got.Rot != 0 {
+	got = o.PoseAt(9)
+	if got.Rot != 0 {
 		t.Errorf("after last key should clamp: %+v", got)
 	}
-	if got := o.PoseAt(1); !approx(got.Rot, 10) {
+	got = o.PoseAt(1)
+	if !approx(got.Rot, 10) {
 		t.Errorf("midpoint rot = %g, want 10", got.Rot)
 	}
-	if got := o.PoseAt(3); !approx(got.Rot, 10) {
+	got = o.PoseAt(3)
+	if !approx(got.Rot, 10) {
 		t.Errorf("rot at t=3 = %g, want 10", got.Rot)
 	}
 }
@@ -63,14 +67,17 @@ func TestApplyScaleAboutPivot(t *testing.T) {
 
 func TestLoopTime(t *testing.T) {
 	s := &Scene{Loop: 4}
-	if got := s.LoopTime(5); !approx(got, 1) {
+	got := s.LoopTime(5)
+	if !approx(got, 1) {
 		t.Errorf("LoopTime(5) = %g, want 1", got)
 	}
-	if got := s.LoopTime(8); !approx(got, 0) {
+	got = s.LoopTime(8)
+	if !approx(got, 0) {
 		t.Errorf("LoopTime(8) = %g, want 0", got)
 	}
 	static := &Scene{Loop: 0}
-	if got := static.LoopTime(99); got != 0 {
+	got = static.LoopTime(99)
+	if got != 0 {
 		t.Errorf("static LoopTime = %g, want 0", got)
 	}
 }

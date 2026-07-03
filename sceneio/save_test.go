@@ -112,7 +112,8 @@ const seligSample = `TEST
 func TestDATSource(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "test.dat")
-	if err := os.WriteFile(path, []byte(seligSample), 0o600); err != nil {
+	err := os.WriteFile(path, []byte(seligSample), 0o600)
+	if err != nil {
 		t.Fatal(err)
 	}
 	src := `(scene (object "wing" (dat "` + path + `" 100 10 50)) (loop 0))`
@@ -135,7 +136,8 @@ func TestDATSource(t *testing.T) {
 
 func TestDATMissingFile(t *testing.T) {
 	src := `(scene (object "w" (dat "/no/such/file.dat" 100 0 0)) (loop 0))`
-	if _, err := Load(src); err == nil {
+	_, err := Load(src)
+	if err == nil {
 		t.Error("expected an error for a missing .dat file")
 	}
 }

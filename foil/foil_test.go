@@ -8,11 +8,13 @@ import (
 func TestNACA4Validation(t *testing.T) {
 	cases := []string{"123", "12345", "12a4", ""}
 	for _, code := range cases {
-		if _, err := NACA4(code, 40); err == nil {
+		_, err := NACA4(code, 40)
+		if err == nil {
 			t.Errorf("NACA4(%q) accepted an invalid code", code)
 		}
 	}
-	if _, err := NACA4("0012", 1); err == nil {
+	_, err := NACA4("0012", 1)
+	if err == nil {
 		t.Error("NACA4 accepted n<2")
 	}
 }
@@ -72,13 +74,16 @@ func TestNACA5(t *testing.T) {
 		t.Errorf("23012 not cambered upward: maxY=%g minY=%g", maxY, minY)
 	}
 	// Dispatcher and validation.
-	if _, err := NACA("23012", 40); err != nil {
+	_, err = NACA("23012", 40)
+	if err != nil {
 		t.Errorf("NACA dispatch on 5-digit: %v", err)
 	}
-	if _, err := NACA5("23112", 40); err == nil {
+	_, err = NACA5("23112", 40)
+	if err == nil {
 		t.Error("reflex (Q=1) should be rejected")
 	}
-	if _, err := NACA("240", 40); err == nil {
+	_, err = NACA("240", 40)
+	if err == nil {
 		t.Error("3-digit code should be rejected")
 	}
 }

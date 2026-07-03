@@ -49,7 +49,8 @@ func TestLoadSample(t *testing.T) {
 		t.Fatalf("flap keys = %d, want 3", len(flap.Keys))
 	}
 	// The negative rotation literal must parse and reach the pose.
-	if got := flap.Keys[1].Pose.Rot; math.Abs(got+25) > 1e-9 {
+	got := flap.Keys[1].Pose.Rot
+	if math.Abs(got+25) > 1e-9 {
 		t.Errorf("middle key rot = %g, want -25 (check negative literal parsing)", got)
 	}
 
@@ -79,7 +80,8 @@ func TestLoadErrors(t *testing.T) {
 		`(scene (object "x" (naca "9" 1 0 0)))`, // naca code too short
 	}
 	for _, c := range cases {
-		if _, err := Load(c); err == nil {
+		_, err := Load(c)
+		if err == nil {
 			t.Errorf("expected error for %q", c)
 		}
 	}

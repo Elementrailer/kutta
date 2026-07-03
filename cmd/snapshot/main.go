@@ -43,7 +43,8 @@ func main() {
 	for _, m := range []string{"speed", "vort", "press"} {
 		p := filepath.Join(*outDir, "airfoil_"+m+".png")
 		writePNG(p, s, m)
-		if a, err := filepath.Abs(p); err == nil {
+		a, err := filepath.Abs(p)
+		if err == nil {
 			fmt.Printf("wrote %s\n", a)
 		}
 	}
@@ -88,10 +89,12 @@ func writePNG(path string, s *lbm.Solver, mode string) {
 	if err != nil {
 		panic(err)
 	}
-	if err := png.Encode(f, img); err != nil {
+	err = png.Encode(f, img)
+	if err != nil {
 		panic(err)
 	}
-	if err := f.Close(); err != nil {
+	err = f.Close()
+	if err != nil {
 		panic(err)
 	}
 }

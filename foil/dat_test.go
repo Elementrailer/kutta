@@ -64,7 +64,8 @@ func TestParseDATErrors(t *testing.T) {
 		"",                          // empty
 	}
 	for _, c := range cases {
-		if _, err := ParseDAT([]byte(c)); err == nil {
+		_, err := ParseDAT([]byte(c))
+		if err == nil {
 			t.Errorf("expected error for %q", c)
 		}
 	}

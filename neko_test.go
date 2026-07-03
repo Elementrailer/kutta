@@ -73,7 +73,8 @@ func TestNekoFileMatches(t *testing.T) {
 	if err != nil {
 		t.Fatalf("neko.afoil does not parse: %v", err)
 	}
-	if got, want := len(sc.Objects[0].Shape), len(nekoScene().Objects[0].Shape); got != want {
+	got, want := len(sc.Objects[0].Shape), len(nekoScene().Objects[0].Shape)
+	if got != want {
 		t.Errorf("neko.afoil has %d points, nekoScene has %d", got, want)
 	}
 }

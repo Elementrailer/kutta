@@ -13,7 +13,8 @@ func sqKnots() []foil.Point {
 
 func TestOutlinePolygonVsCurved(t *testing.T) {
 	o := &Object{Shape: sqKnots()}
-	if got := len(o.Outline()); got != 4 {
+	got := len(o.Outline())
+	if got != 4 {
 		t.Errorf("polygon outline len = %d, want 4", got)
 	}
 	if o.HasHandles() {
@@ -24,7 +25,8 @@ func TestOutlinePolygonVsCurved(t *testing.T) {
 		t.Fatal("AutoSmooth did not create handles")
 	}
 	// A fully curved 4-anchor loop flattens to 4 cubic edges of bezSeg each.
-	if got := len(o.Outline()); got != 4*bezSeg {
+	got = len(o.Outline())
+	if got != 4*bezSeg {
 		t.Errorf("curved outline len = %d, want %d", got, 4*bezSeg)
 	}
 }
@@ -51,7 +53,8 @@ func TestMixedCornerAndCurve(t *testing.T) {
 	// Edges: 0->1 corner (1 pt), 1->2 has h1 -> cubic, 2->3 cubic, 3->0 has h0 -> cubic.
 	// corner edge contributes 1, each cubic contributes bezSeg.
 	want := 1 + 3*bezSeg
-	if got := len(o.Outline()); got != want {
+	got := len(o.Outline())
+	if got != want {
 		t.Errorf("mixed outline len = %d, want %d", got, want)
 	}
 }
