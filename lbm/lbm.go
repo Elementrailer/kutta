@@ -29,6 +29,16 @@ var (
 	opp = [9]int{0, 3, 4, 1, 2, 7, 8, 5, 6}
 )
 
+// Stability-clamp bounds for the collide step. uMax sits well above anything the
+// app's normal envelope produces (local peaks stay under ~0.2 at the top inlet
+// speed on a slender body) and well below where the D2Q9 equilibrium turns
+// negative, so it only engages in blow-up territory.
+const (
+	uMax   = 0.35
+	rhoMin = 0.5
+	rhoMax = 2.0
+)
+
 // Solver holds the populations and the derived macroscopic fields for one grid.
 type Solver struct {
 	NX, NY int
@@ -128,6 +138,23 @@ func (s *Solver) Solid(x, y int) bool {
 	return s.solid[y*s.NX+x]
 }
 
+// Finite reports whether every macroscopic field and integral force is a real
+// number. The collide clamp should keep this always true; the app still checks
+// it after stepping as a backstop, so a blow-up in some unforeseen corner
+// resets the flow instead of feeding NaN to the renderer.
+func (s *Solver) Finite() bool {
+	for c := range s.Rho {
+		if !finite(s.Rho[c]) || !finite(s.Ux[c]) || !finite(s.Uy[c]) {
+			return false
+		}
+	}
+	return finite(s.Fx) && finite(s.Fy) && finite(s.Mz) && finite(s.Sep)
+}
+
+func finite(v float64) bool {
+	return !math.IsNaN(v) && !math.IsInf(v, 0)
+}
+
 // feq is the discrete equilibrium distribution for direction i given the local
 // density and velocity.
 func feq(i int, rho, ux, uy float64) float64 {
@@ -165,6 +192,24 @@ func (s *Solver) collide() {
 		}
 		ux := mx / rho
 		uy := my / rho
+		// Stability net: extreme settings (a broadside body at the top inlet
+		// speed blocks ~70% of the channel) push local speeds past what BGK at
+		// this tau can integrate, and the run dissolves into NaNs. Clamping the
+		// macroscopic inputs of the equilibrium keeps the populations finite; in
+		// the normal envelope (|u| stays below ~0.2) the clamp is inert, so the
+		// physics elsewhere is untouched.
+		if rho < rhoMin {
+			rho = rhoMin
+		}
+		if rho > rhoMax {
+			rho = rhoMax
+		}
+		sp2 := ux*ux + uy*uy
+		if sp2 > uMax*uMax {
+			k := uMax / math.Sqrt(sp2)
+			ux *= k
+			uy *= k
+		}
 		s.Rho[c], s.Ux[c], s.Uy[c] = rho, ux, uy
 		for i := range 9 {
 			s.f[i][c] += s.omega * (feq(i, rho, ux, uy) - s.f[i][c])

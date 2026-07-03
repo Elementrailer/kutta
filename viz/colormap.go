@@ -92,7 +92,14 @@ func lerpByte(a, b uint8, t float64) uint8 {
 	return uint8(float64(a) + (float64(b)-float64(a))*t)
 }
 
+// clamp01 bounds t to [0,1]. NaN maps to 0: a NaN sails through the < and >
+// comparisons, and downstream rampAt would turn it into int(NaN) — a huge
+// negative slice index. The renderer must never be able to panic on a sick
+// field value, whatever the solver produced.
 func clamp01(t float64) float64 {
+	if math.IsNaN(t) {
+		return 0
+	}
 	if t < 0 {
 		return 0
 	}
@@ -102,7 +109,11 @@ func clamp01(t float64) float64 {
 	return t
 }
 
+// clampSym bounds t to [-1,1]; NaN maps to 0 for the same reason as clamp01.
 func clampSym(t float64) float64 {
+	if math.IsNaN(t) {
+		return 0
+	}
 	if t < -1 {
 		return -1
 	}

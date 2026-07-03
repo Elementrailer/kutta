@@ -1,6 +1,24 @@
 package viz
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
+
+// TestColormapsNaNSafe pins the fix for issue #1's crash: clamp01(NaN) used to
+// stay NaN, and rampAt then indexed stops[int(NaN)] — a panic. Every colormap
+// must swallow non-finite input and return a valid color.
+func TestColormapsNaNSafe(t *testing.T) {
+	nan := math.NaN()
+	if got := Speed(nan); got != speedStops[0] {
+		t.Errorf("Speed(NaN) = %+v, want first stop", got)
+	}
+	Vorticity(nan, 1) // must not panic
+	Pressure(nan, 1)  // must not panic
+	if got := Speed(math.Inf(1)); got != speedStops[len(speedStops)-1] {
+		t.Errorf("Speed(+Inf) = %+v, want last stop", got)
+	}
+}
 
 func TestSpeedRampEndpoints(t *testing.T) {
 	lo := Speed(-1) // clamps to 0

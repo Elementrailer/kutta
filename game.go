@@ -193,6 +193,7 @@ type Game struct {
 	animTime    float64
 	animPlaying bool // timeline running; when false the surfaces hold their pose
 	sceneErr    string
+	simErr      string // status note after an instability reset; cleared on user changes
 
 	// Editor mode: a second view of the same scene (toggled with E). The
 	// simulation is frozen while editing.
@@ -337,6 +338,7 @@ func (g *Game) setNACA(code string) {
 	}
 	g.nacaCode = code
 	g.nacaInput = code
+	g.simErr = ""
 	g.applyBody(true)
 	g.resetCurve()
 }
@@ -541,9 +543,7 @@ func (g *Game) Update() error {
 		g.animTime += animDt
 		g.sim.UpdateSolid(g.sceneMask(g.scn.LoopTime(g.animTime)))
 	}
-	for range substeps {
-		g.sim.Step()
-	}
+	g.stepSim(substeps)
 	g.smoke.Step(g.sim, tracerSpeed)
 	const a = 0.04 // EMA smoothing for the displayed forces
 	g.fxEMA += a * (g.sim.Fx - g.fxEMA)
@@ -564,6 +564,40 @@ func (g *Game) Update() error {
 		g.clSeen[bin] = true
 	}
 	return nil
+}
+
+// stepSim advances the solver n steps and verifies the state stayed finite.
+// The collide clamp in lbm should make a blow-up impossible, but if some
+// unforeseen corner still produces NaN this backstop resets the flow in place
+// instead of letting a sick field reach the renderer (issue #1: the colormap
+// used to panic on it). Both stepping sites — the frame loop and the N
+// single-step — must go through here.
+func (g *Game) stepSim(n int) {
+	for range n {
+		g.sim.Step()
+	}
+	if g.sim.Finite() {
+		return
+	}
+	g.resetUnstableFlow()
+}
+
+// resetUnstableFlow rebuilds the flow from clean inflow around the CURRENT
+// body — the scene mask when a scene is loaded, the interactive foil otherwise
+// — and clears every derived readout the blow-up polluted.
+func (g *Game) resetUnstableFlow() {
+	// Re-sync the inlet speed from the app's state first: whatever poisoned the
+	// solver must not survive into the rebuilt flow.
+	g.sim.SetInletSpeed(g.u0)
+	if g.scn != nil {
+		g.sim.SetSolid(g.sceneMask(g.scn.LoopTime(g.animTime)))
+	} else {
+		g.applyBody(true)
+	}
+	g.smoke = viz.NewParticles(nParticles, gridW, gridH, 1)
+	g.fxEMA, g.fyEMA, g.mzEMA, g.sepEMA = 0, 0, 0, 0
+	g.clCur, g.cdCur = 0, 0
+	g.simErr = "flow reset after numerical instability"
 }
 
 // resetCurve clears the lift curve; the polar is specific to one profile.
@@ -683,10 +717,11 @@ func (g *Game) handleInput() {
 		g.paused = !g.paused
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyN) && g.paused {
-		g.sim.Step()
+		g.stepSim(1)
 		g.smoke.Step(g.sim, tracerSpeed)
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyR) {
+		g.simErr = ""
 		g.sim.Reset()
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyBracketRight) {
@@ -760,6 +795,7 @@ func (g *Game) setScene(sc *scene.Scene, path string) {
 	g.animTime = 0
 	g.animPlaying = false
 	g.sceneErr = ""
+	g.simErr = ""
 	g.resetCurve()
 	g.sim.SetSolid(g.sceneMask(0))
 }
@@ -830,6 +866,7 @@ func (g *Game) saveSceneAs() {
 // (without resetting the flow); in scene mode the angle is applied as a global
 // rotation each frame, so nothing else is needed here.
 func (g *Game) setAlpha(deg float64) {
+	g.simErr = ""
 	g.alphaDeg = math.Max(-aoaLimit, math.Min(aoaLimit, deg))
 	if g.scn == nil {
 		g.applyBody(false)
@@ -842,6 +879,7 @@ func (g *Game) setAlpha(deg float64) {
 
 // setSpeed changes the free-stream speed in place (no reset).
 func (g *Game) setSpeed(u float64) {
+	g.simErr = ""
 	g.u0 = math.Max(0.02, math.Min(0.15, u))
 	g.sim.SetInletSpeed(g.u0)
 }
@@ -1262,6 +1300,9 @@ func (g *Game) drawSidePanel(screen *ebiten.Image) {
 		y = g.row(screen, "CG (aero center)", fmt.Sprintf("%.0f%% chord", pivotFrac*100), x, y)
 	}
 
+	if g.simErr != "" {
+		y = g.row(screen, "Status", g.simErr, x, y)
+	}
 	if g.sceneErr != "" {
 		y = g.row(screen, "Scene error", g.sceneErr, x, y)
 	}
