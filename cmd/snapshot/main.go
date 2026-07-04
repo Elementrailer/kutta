@@ -14,9 +14,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"airfoil/foil"
-	"airfoil/lbm"
-	"airfoil/viz"
+	"kutta/foil"
+	"kutta/lbm"
+	"kutta/viz"
 )
 
 const (
@@ -41,7 +41,7 @@ func main() {
 
 	s := run("2412", 8, 6000)
 	for _, m := range []string{"speed", "vort", "press"} {
-		p := filepath.Join(*outDir, "airfoil_"+m+".png")
+		p := filepath.Join(*outDir, "kutta_"+m+".png")
 		writePNG(p, s, m)
 		a, err := filepath.Abs(p)
 		if err == nil {

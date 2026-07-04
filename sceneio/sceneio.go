@@ -32,8 +32,8 @@ import (
 
 	"github.com/crgimenes/filo"
 
-	"airfoil/foil"
-	"airfoil/scene"
+	"kutta/foil"
+	"kutta/scene"
 )
 
 // Ext is the file extension for airfoil scene files. The content is Filo

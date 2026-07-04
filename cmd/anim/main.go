@@ -15,10 +15,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"airfoil/lbm"
-	"airfoil/scene"
-	"airfoil/sceneio"
-	"airfoil/viz"
+	"kutta/lbm"
+	"kutta/scene"
+	"kutta/sceneio"
+	"kutta/viz"
 )
 
 const (

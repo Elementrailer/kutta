@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"airfoil/scene"
+	"kutta/scene"
 )
 
 // Save serializes a scene back to Filo text that Load reads back equivalently.

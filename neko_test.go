@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"airfoil/sceneio"
+	"kutta/sceneio"
 )
 
 func TestMenuIsStableAndSignatureTracksContext(t *testing.T) {

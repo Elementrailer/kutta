@@ -4,8 +4,8 @@ import (
 	"math"
 	"testing"
 
-	"airfoil/foil"
-	"airfoil/scene"
+	"kutta/foil"
+	"kutta/scene"
 )
 
 func capprox(a, b float64) bool { return math.Abs(a-b) < 1e-9 }

@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"airfoil/foil"
-	"airfoil/scene"
+	"kutta/foil"
+	"kutta/scene"
 )
 
 func approxPt(a, b float64) bool { return math.Abs(a-b) < 1e-9 }

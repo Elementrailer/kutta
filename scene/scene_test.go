@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"airfoil/foil"
+	"kutta/foil"
 )
 
 func approx(a, b float64) bool { return math.Abs(a-b) < 1e-9 }

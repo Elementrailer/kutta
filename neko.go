@@ -1,8 +1,8 @@
 package main
 
 import (
-	"airfoil/foil"
-	"airfoil/scene"
+	"kutta/foil"
+	"kutta/scene"
 )
 
 // nekoScene is the easter-egg neko (cat) — a side-view silhouette treated as an

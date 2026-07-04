@@ -11,7 +11,7 @@ import (
 	"math"
 	"sort"
 
-	"airfoil/foil"
+	"kutta/foil"
 )
 
 // Pose places an object relative to its base shape: a rotation and uniform

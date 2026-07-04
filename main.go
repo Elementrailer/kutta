@@ -1,4 +1,4 @@
-// Command airfoil is a 2D wind-tunnel toy: it streams a Lattice-Boltzmann flow
+// Command kutta is a 2D wind-tunnel toy: it streams a Lattice-Boltzmann flow
 // past a NACA airfoil and visualizes speed, vorticity, smoke streaklines and the
 // lift/drag vectors, with an adjustable angle of attack.
 package main
@@ -11,7 +11,7 @@ import (
 
 func main() {
 	ebiten.SetWindowSize(winW, winH)
-	ebiten.SetWindowTitle("airfoil — 2D wind tunnel")
+	ebiten.SetWindowTitle("kutta — 2D wind tunnel")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	setWindowIcon()
 	err := ebiten.RunGame(NewGame())

@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"airfoil/foil"
+	"kutta/foil"
 )
 
 const sample = `

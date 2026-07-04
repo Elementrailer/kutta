@@ -19,11 +19,11 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"golang.org/x/image/font/basicfont"
 
-	"airfoil/foil"
-	"airfoil/lbm"
-	"airfoil/scene"
-	"airfoil/sceneio"
-	"airfoil/viz"
+	"kutta/foil"
+	"kutta/lbm"
+	"kutta/scene"
+	"kutta/sceneio"
+	"kutta/viz"
 )
 
 // Tunable defaults. The grid is kept modest so several solver steps fit in one
@@ -472,8 +472,8 @@ func (g *Game) menuItems() []menu.Item {
 	}
 
 	return []menu.Item{
-		{Title: "airfoil", Submenu: []menu.Item{
-			{Title: "Quit airfoil", Shortcut: "cmd+q", OnClick: act(func() { g.quit = true })},
+		{Title: "kutta", Submenu: []menu.Item{
+			{Title: "Quit kutta", Shortcut: "cmd+q", OnClick: act(func() { g.quit = true })},
 		}},
 		{Title: "File", Submenu: []menu.Item{
 			{Title: "Open…", Shortcut: "cmd+o", OnClick: act(g.openSceneDialog)},

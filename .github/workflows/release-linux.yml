@@ -55,13 +55,13 @@ jobs:
           go build \
             -trimpath \
             -ldflags="-s -w" \
-            -o "dist/airfoil-linux-${GOARCH}" \
+            -o "dist/kutta-linux-${GOARCH}" \
             .
-          gzip "dist/airfoil-linux-${GOARCH}"
+          gzip "dist/kutta-linux-${GOARCH}"
 
       - name: Upload Linux asset
         env:
           GH_TOKEN: ${{ github.token }}
           GOARCH: ${{ matrix.goarch }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: gh release upload "$RELEASE_TAG" "dist/airfoil-linux-${GOARCH}.gz"
+        run: gh release upload "$RELEASE_TAG" "dist/kutta-linux-${GOARCH}.gz"

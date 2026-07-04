@@ -4,8 +4,8 @@ import (
 	"math"
 	"testing"
 
-	"airfoil/lbm"
-	"airfoil/viz"
+	"kutta/lbm"
+	"kutta/viz"
 )
 
 // simGame builds the minimal Game the instability path touches: solver, smoke

@@ -11,7 +11,7 @@ import (
 
 // The window icon ships inside the binary so a single executable carries its own
 // icon on Windows and Linux (macOS uses the .app bundle icon instead). It is a
-// 256px reduction of the assets/airfoil.png master (the base for all icons).
+// 256px reduction of the assets/kutta.png master (the base for all icons).
 //
 //go:embed assets/icon.png
 var iconPNG []byte

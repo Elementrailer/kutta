@@ -12,8 +12,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 
-	"airfoil/foil"
-	"airfoil/scene"
+	"kutta/foil"
+	"kutta/scene"
 )
 
 // camera maps world (grid) coordinates — x right, y up — to the editor

@@ -1,4 +1,4 @@
-module airfoil
+module kutta
 
 go 1.26.4
 

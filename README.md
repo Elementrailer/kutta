@@ -1,6 +1,6 @@
-# airfoil — 2D wind tunnel
+# kutta - 2D wind tunnel
 
-![airfoil](https://github.com/crgimenes/airfoil/blob/trunk/fixtures/airfoil.gif)
+![kutta](https://github.com/crgimenes/kutta/blob/trunk/fixtures/kutta.gif)
 
 A 2D wind tunnel for aeromodelers and anyone who likes watching air misbehave.
 It streams a flow past an airfoil and draws the speed field, the vorticity, smoke
@@ -20,41 +20,49 @@ to install alongside it.
 ## Download (no Go required)
 
 Grab a prebuilt binary from the
-[latest release](https://github.com/crgimenes/airfoil/releases/latest). You do
+[latest release](https://github.com/crgimenes/kutta/releases/latest). You do
 **not** need Go or any developer tools.
 
 | System | File to download |
 | --- | --- |
-| macOS (Intel or Apple Silicon) | `airfoil-darwin-universal.zip` |
-| Windows (64-bit, most common) | `airfoil-windows-amd64.exe` |
-| Windows (older 32-bit) | `airfoil-windows-386.exe` |
-| Windows (ARM) | `airfoil-windows-arm64.exe` |
-| Linux (Intel/AMD 64-bit) | `airfoil-linux-amd64.gz` |
-| Linux (ARM 64-bit) | `airfoil-linux-arm64.gz` |
+| macOS (Intel or Apple Silicon) | `kutta-darwin-universal.zip` |
+| Windows (64-bit, most common) | `kutta-windows-amd64.exe` |
+| Windows (older 32-bit) | `kutta-windows-386.exe` |
+| Windows (ARM) | `kutta-windows-arm64.exe` |
+| Linux (Intel/AMD 64-bit) | `kutta-linux-amd64.gz` |
+| Linux (ARM 64-bit) | `kutta-linux-arm64.gz` |
 
 ### macOS
 
-1. Download `airfoil-darwin-universal.zip` and double-click it to unzip. You get
-   `airfoil.app`.
-2. Move `airfoil.app` to your **Applications** folder.
+With [Homebrew](https://brew.sh), one command:
+
+```bash
+brew install --cask crgimenes/tap/kutta
+```
+
+Or by hand:
+
+1. Download `kutta-darwin-universal.zip` and double-click it to unzip. You get
+   `kutta.app`.
+2. Move `kutta.app` to your **Applications** folder.
 3. Double-click it to run.
 
 The app is signed and notarized by Apple, so it opens normally. The single
 universal build runs on both Intel and Apple Silicon, so there is no architecture
 to choose.
 
-If macOS says **"airfoil.app is damaged and can't be opened"** or complains about
+If macOS says **"kutta.app is damaged and can't be opened"** or complains about
 an unidentified developer:
 
 - Make sure the download finished, and unzip before opening (do not run the app
   from inside the `.zip`). Re-download if in doubt.
-- Right-click `airfoil.app`, choose **Open**, then confirm with **Open** in the
+- Right-click `kutta.app`, choose **Open**, then confirm with **Open** in the
   dialog.
 - If it still refuses, open **Terminal** and run (adjust the path if you did not
   move it to Applications):
 
   ```bash
-  xattr -dr com.apple.quarantine /Applications/airfoil.app
+  xattr -dr com.apple.quarantine /Applications/kutta.app
   ```
 
 ### Windows
@@ -68,9 +76,9 @@ warn you because the app is not from the Microsoft Store: click
 Download the matching `.gz`, then decompress and run:
 
 ```bash
-gunzip airfoil-linux-amd64.gz
-chmod +x airfoil-linux-amd64
-./airfoil-linux-amd64
+gunzip kutta-linux-amd64.gz
+chmod +x kutta-linux-amd64
+./kutta-linux-amd64
 ```
 
 ## Run from source
