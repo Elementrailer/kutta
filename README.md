@@ -158,3 +158,14 @@ bucket, the force signs coming out right.
 ## License
 
 See [LICENSE](LICENSE).
+
+---
+
+## More of my projects
+
+- [minigui](https://github.com/crgimenes/minigui): a tiny immediate-mode GUI for Ebitengine.
+- [filo](https://github.com/crgimenes/filo): a small scripting language safe to embed in Go programs.
+- [glaze](https://github.com/crgimenes/glaze): WebView desktop apps in Go, cgo-free.
+- [neko](https://github.com/crgimenes/neko): the classic desktop cat chasing your pointer, in Go.
+
+More at [github.com/crgimenes](https://github.com/crgimenes) and [crg.eti.br](https://crg.eti.br).
