@@ -34,6 +34,8 @@ const (
 	pixScale = 3
 	tau      = 0.6
 	defaultU = 0.10
+	spdMin   = 0.02 // inlet speed range where the solver stays stable
+	spdMax   = 0.15
 
 	substeps    = 3    // solver steps per displayed frame
 	tracerSpeed = 5.0  // visual advection multiplier for smoke tracers
@@ -127,25 +129,6 @@ const (
 
 var profiles = []string{"2412", "0012", "0009", "4412", "6412", "2415"}
 
-// slider is a draggable horizontal control in the bottom panel.
-type slider struct {
-	x, y, w  float64
-	lo, hi   float64
-	label    string
-	unit     string
-	decimals int
-}
-
-func (s slider) value(mx float64) float64 {
-	t := (mx - s.x) / s.w
-	t = math.Max(0, math.Min(1, t))
-	return s.lo + t*(s.hi-s.lo)
-}
-
-func (s slider) hit(mx, my float64) bool {
-	return mx >= s.x-10 && mx <= s.x+s.w+10 && my >= s.y-12 && my <= s.y+12
-}
-
 // Game is the Ebiten model: a solver, the tracer cloud, the current geometry,
 // and the layered images used to draw the field and the persistent smoke trail.
 type Game struct {
@@ -179,8 +162,7 @@ type Game struct {
 	clCurve [nBins]float64
 	clSeen  [nBins]bool
 
-	aoaSlider, spdSlider slider
-	dragging             *slider // slider currently held by the mouse, or nil
+	sliders ui.Context // minigui context for the bottom panel's sliders
 
 	bloomFx bloom
 
@@ -296,8 +278,9 @@ func NewGame() *Game {
 	g.fadeImg.Fill(color.RGBA{0, 0, 0, 26}) // controls smoke trail length
 	g.pixbuf = make([]byte, gridW*gridH*4)
 
-	g.aoaSlider = slider{x: simW + 16, y: simH + 58, w: 250, lo: -aoaLimit, hi: aoaLimit, label: "Angle of attack", unit: "deg", decimals: 1}
-	g.spdSlider = slider{x: simW + 16, y: simH + 108, w: 250, lo: 0.02, hi: 0.15, label: "Inlet speed", unit: "", decimals: 2}
+	st := ui.DefaultStyle()
+	st.FieldW = 250 // slider track width in the bottom panel
+	g.sliders.SetStyle(st)
 
 	g.applyBody(true)
 	return g
@@ -664,7 +647,7 @@ func (g *Game) handleInput() {
 	g.runSimToolbar() // immediate-mode: build + handle the toolbar every frame
 	// While typing in the NACA field, let it own the keyboard (sliders still work).
 	if g.gui.HasFocus() {
-		g.handleMouse()
+		g.runSliders()
 		return
 	}
 	// L plays/pauses the timeline of an open scene. The fluid keeps simulating
@@ -730,30 +713,23 @@ func (g *Game) handleInput() {
 	if inpututil.IsKeyJustPressed(ebiten.KeyBracketLeft) {
 		g.setSpeed(g.u0 - 0.01)
 	}
-	g.handleMouse()
+	g.runSliders()
 }
 
-// handleMouse drives the draggable sliders.
-func (g *Game) handleMouse() {
-	mx, my := ebiten.CursorPosition()
-	fmx, fmy := float64(mx), float64(my)
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		switch {
-		case g.aoaSlider.hit(fmx, fmy):
-			g.dragging = &g.aoaSlider
-		case g.spdSlider.hit(fmx, fmy):
-			g.dragging = &g.spdSlider
-		}
+// runSliders drives the bottom panel's draggable sliders (minigui): angle of
+// attack and inlet speed, each with a label row whose value column stays put
+// while the knob moves.
+func (g *Game) runSliders() {
+	g.sliders.Begin(ui.InputFromEbiten(), simW+16, simH+30)
+	g.sliders.Label(fmt.Sprintf("Angle of attack %17.1f deg", g.alphaDeg))
+	if g.sliders.Slider("aoa", &g.alphaDeg, -aoaLimit, aoaLimit) {
+		g.setAlpha(g.alphaDeg)
 	}
-	if !ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		g.dragging = nil
+	g.sliders.Label(fmt.Sprintf("Inlet speed %25.2f", g.u0))
+	if g.sliders.Slider("spd", &g.u0, spdMin, spdMax) {
+		g.setSpeed(g.u0)
 	}
-	switch g.dragging {
-	case &g.aoaSlider:
-		g.setAlpha(g.aoaSlider.value(fmx))
-	case &g.spdSlider:
-		g.setSpeed(g.spdSlider.value(fmx))
-	}
+	g.sliders.End()
 }
 
 // openSceneDialog asks the OS for a scene file and loads it (paused at the
@@ -917,7 +893,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	vector.StrokeRect(screen, 0, 0, simW, simH, 1, colSep, false)
 	g.drawSidePanel(screen)
 	g.drawBottomPanel(screen)
-	g.gui.Render(screen) // the minigui toolbar, over the flow's top-left
+	g.gui.Render(screen)     // the minigui toolbar, over the flow's top-left
+	g.sliders.Render(screen) // the bottom panel's sliders
 }
 
 // paintField fills the reusable pixel buffer from the chosen scalar field. Grid
@@ -1281,7 +1258,7 @@ func (g *Game) drawSidePanel(screen *ebiten.Image) {
 	// and a percent of the stable range, friendlier than the raw lattice speed;
 	// the solver is near-incompressible, so this stays well under Mach 1.
 	mach := g.u0 * math.Sqrt(3)
-	y = g.row(screen, "Airspeed", fmt.Sprintf("Ma %.2f  (%.0f%%)", mach, 100*g.u0/g.spdSlider.hi), x, y)
+	y = g.row(screen, "Airspeed", fmt.Sprintf("Ma %.2f  (%.0f%%)", mach, 100*g.u0/spdMax), x, y)
 	y = g.row(screen, "Reynolds", fmt.Sprintf("~ %.0f", re), x, y)
 
 	y = g.header(screen, "FORCES (qualitative)", x, y+8)
@@ -1379,9 +1356,6 @@ func (g *Game) drawBottomPanel(screen *ebiten.Image) {
 		drawString(screen, c[1], cx+86, cy, colLabel)
 	}
 
-	g.drawSlider(screen, g.aoaSlider, g.alphaDeg)
-	g.drawSlider(screen, g.spdSlider, g.u0)
-
 	g.drawClPlot(screen, 540, top+24, 480, 116)
 }
 
@@ -1435,19 +1409,6 @@ func (g *Game) drawClPlot(screen *ebiten.Image, x, y, w, h float64) {
 		cl := math.Max(clPlotMin, math.Min(clPlotMax, g.clCur))
 		vector.FillCircle(screen, float32(px(g.alphaDeg)), float32(py(cl)), 3, colValue, true)
 	}
-}
-
-// drawSlider renders a labeled track with a knob at the current value.
-func (g *Game) drawSlider(screen *ebiten.Image, s slider, val float64) {
-	drawString(screen, s.label, s.x, s.y-16, colLabel)
-	valStr := fmt.Sprintf("%.*f %s", s.decimals, val, s.unit)
-	drawString(screen, valStr, s.x+s.w-56, s.y-16, colValue)
-
-	vector.StrokeLine(screen, float32(s.x), float32(s.y), float32(s.x+s.w), float32(s.y), 2, colSep, true)
-	t := (val - s.lo) / (s.hi - s.lo)
-	kx := s.x + t*s.w
-	vector.StrokeLine(screen, float32(s.x), float32(s.y), float32(kx), float32(s.y), 2, colHeader, true)
-	vector.FillCircle(screen, float32(kx), float32(s.y), 7, colValue, true)
 }
 
 // header draws a section title and returns the y for the next line.

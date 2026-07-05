@@ -5,7 +5,7 @@ go 1.26.4
 require (
 	github.com/crgimenes/filo v0.0.15
 	github.com/crgimenes/glaze v0.0.31
-	github.com/crgimenes/minigui v0.1.5
+	github.com/crgimenes/minigui v0.1.7
 	github.com/hajimehoshi/ebiten/v2 v2.10.0-alpha.11.0.20260511153605-ac9d235653cc
 	golang.org/x/image v0.43.0
 )
