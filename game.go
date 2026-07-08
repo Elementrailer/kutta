@@ -460,6 +460,7 @@ func (g *Game) menuItems() []menu.Item {
 		}},
 		{Title: "File", Submenu: []menu.Item{
 			{Title: "Open…", Shortcut: "cmd+o", OnClick: act(g.openSceneDialog)},
+			{Title: "Import SVG…", OnClick: act(g.importSVGDialog)},
 			{Separator: true},
 			{Title: "Save", Shortcut: "cmd+s", OnClick: act(g.saveScene)},
 			{Title: "Save As…", Shortcut: "cmd+shift+s", OnClick: act(g.saveSceneAs)},
