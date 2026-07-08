@@ -48,6 +48,10 @@ func ParseSVG(data []byte) ([][]Point, error) {
 func collectShapes(data []byte) ([][]Point, error) {
 	dec := xml.NewDecoder(bytes.NewReader(data))
 	var out [][]Point
+	// hidden tracks display:none through nesting: each open element records
+	// whether it or any ancestor is invisible, so hidden draft layers common
+	// in Inkscape files do not leak into the import.
+	var hidden []bool
 	for {
 		tok, err := dec.Token()
 		if errors.Is(err, io.EOF) {
@@ -56,8 +60,19 @@ func collectShapes(data []byte) ([][]Point, error) {
 		if err != nil {
 			return nil, fmt.Errorf("foil: svg: %w", err)
 		}
+		if _, ok := tok.(xml.EndElement); ok {
+			if len(hidden) > 0 {
+				hidden = hidden[:len(hidden)-1]
+			}
+			continue
+		}
 		el, ok := tok.(xml.StartElement)
 		if !ok {
+			continue
+		}
+		invisible := (len(hidden) > 0 && hidden[len(hidden)-1]) || elementHidden(el)
+		hidden = append(hidden, invisible)
+		if invisible {
 			continue
 		}
 		var subs [][]Point
@@ -78,6 +93,21 @@ func collectShapes(data []byte) ([][]Point, error) {
 		}
 		out = append(out, subs...)
 	}
+}
+
+// elementHidden reports whether the element is invisible via a display="none"
+// attribute or a display:none declaration in its style attribute.
+func elementHidden(el xml.StartElement) bool {
+	if strings.TrimSpace(attr(el, "display")) == "none" {
+		return true
+	}
+	for _, decl := range strings.Split(attr(el, "style"), ";") {
+		prop, val, ok := strings.Cut(decl, ":")
+		if ok && strings.TrimSpace(prop) == "display" && strings.TrimSpace(val) == "none" {
+			return true
+		}
+	}
+	return false
 }
 
 func attr(el xml.StartElement, name string) string {

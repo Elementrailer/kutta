@@ -211,6 +211,34 @@ func TestParseSVGSkipsDegenerate(t *testing.T) {
 	}
 }
 
+// TestParseSVGSkipsHidden checks that invisible elements are not imported:
+// Inkscape files routinely carry hidden draft layers and paths, marked with
+// display:none in a style or a display attribute, on the shape or a group.
+func TestParseSVGSkipsHidden(t *testing.T) {
+	svg := `<svg>
+	  <path style="display:none;fill:#1e1ead" d="M0 0 H100 V50 H0 Z"/>
+	  <path display="none" d="M0 0 H200 V50 H0 Z"/>
+	  <g style="display:none"><rect x="0" y="0" width="300" height="50"/></g>
+	  <g><rect x="0" y="0" width="10" height="5"/></g>
+	</svg>`
+	outlines, err := ParseSVG([]byte(svg))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(outlines) != 1 {
+		t.Fatalf("got %d outlines, want only the visible rect", len(outlines))
+	}
+	// If a hidden shape leaked in, it would dominate the group bbox and the
+	// visible 10-wide rect would no longer span the normalized width.
+	var maxX float64
+	for _, p := range outlines[0] {
+		maxX = math.Max(maxX, p.X)
+	}
+	if math.Abs(maxX-1) > 1e-9 {
+		t.Errorf("visible rect should span the width: maxX=%g", maxX)
+	}
+}
+
 // TestParseSVGErrors checks the failure modes: not XML, nothing drawable,
 // only-degenerate geometry, a malformed path, and a zero-width drawing.
 func TestParseSVGErrors(t *testing.T) {
