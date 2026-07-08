@@ -135,10 +135,13 @@ while the flow keeps running. Scenes save as `.afoil`, a small
 few (`flap.afoil`, `neko.afoil`).
 
 Geometry does not have to be drawn by hand or be an airfoil at all. **File →
-Import SVG…** loads a vector drawing as a scene — one object per subpath, with
-curves flattened and the group scaled onto the grid — so a car silhouette, a
+Import SVG…** — or simply **dragging an `.svg` or `.afoil` file onto the
+window** — loads a vector drawing as a scene: one object per subpath, with
+curves flattened and the group scaled onto the grid. A car silhouette, a
 building section or a bridge deck from Inkscape or Illustrator drops straight
-into the tunnel. Scene files can also reference drawings directly with
+into the tunnel. (On Windows and Linux the native file dialogs are not wired
+up yet, so drag and drop is the way to open files there.) Scene files can
+also reference drawings directly with
 `(svg "path" chord leadX leadY [subpath])`, alongside the existing
 `(naca "2412" ...)` and `(dat "file.dat" ...)` sources. Transforms are not
 interpreted (flatten them before exporting) and holes become solid.

@@ -51,6 +51,7 @@ func (g *Game) importSVGDialog() {
 		})
 	})
 	if path == "" {
+		g.noDialogHint()
 		return // cancelled, or unsupported platform
 	}
 	data, err := os.ReadFile(path) // #nosec G304 -- path chosen by the user via the native dialog
